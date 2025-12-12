@@ -5,6 +5,9 @@
 #include <chrono>
 #include <climits>
 #include <functional>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 using namespace std;
 
@@ -94,23 +97,36 @@ void Graph::printWithHighlight(const vector<int>& mapping) const {
     }
 }
 
+
+
 void Graph::printWithHighlightNewEdges(const Graph& originalH) const {
-    const string GREEN = "\033[1;32m";
-    const string RESET = "\033[0m";
+#ifdef _WIN32
+    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO info;
+    GetConsoleScreenBufferInfo(hOut, &info);
+    WORD normal = info.wAttributes;
+    WORD green = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+#endif
 
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
             bool isNew = (adj[i][j] == 1 && originalH.adj[i][j] == 0);
 
-            if (isNew) cout << GREEN;
+#ifdef _WIN32
+            SetConsoleTextAttribute(hOut, isNew ? green : normal);
+            cout << adj[i][j] << " ";
+            SetConsoleTextAttribute(hOut, normal);
+#else
+            if (isNew) cout << "\033[1;32m";
             cout << adj[i][j];
-            if (isNew) cout << RESET;
-
+            if (isNew) cout << "\033[0m";
             cout << " ";
+#endif
         }
         cout << "\n";
     }
 }
+
 
 
 int Graph::computeDistance(const Graph& other, const vector<int>& mapping) const {
