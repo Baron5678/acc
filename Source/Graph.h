@@ -18,9 +18,11 @@ public:
     int computeDistance(const Graph& other, const std::vector<int>& mapping) const;
     std::pair<std::vector<int>, int> findBestMapping(const Graph& target) const;
     Graph extendGraph(int target_size) const;
-    void exactMinExtendGraph(const Graph& target);
-    void printWithHighlightNewEdges(const Graph& originalH) const;
-
+    void exactMinExtendGraph(const Graph& target, int targetCopies = 1);
+    
+    // Hungarian algorithm mapping
+    static std::pair<bool, std::vector<int>> hungarianMappingOne(const Graph& G, const Graph& H);
+    static std::pair<bool, std::vector<int>> hungarianMappingOne(const Graph& G, const Graph& H, const std::vector<bool>& usedH);
     
 private:
     void loadFromFile(const std::string& filename, bool first_graph);

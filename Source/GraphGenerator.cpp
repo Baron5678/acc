@@ -1,4 +1,4 @@
-#include "../include/GraphGenerator.h"
+#include "GraphGenerator.h"
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
@@ -13,7 +13,6 @@ vector<vector<int>> GraphGenerator::generateConnectedGraph(int n, double density
 
     vector<vector<int>> adj(n, vector<int>(n, 0));
 
-    // Randomize node order for spanning tree generation
     vector<int> nodes(n);
     iota(nodes.begin(), nodes.end(), 0);
 
@@ -22,7 +21,6 @@ vector<vector<int>> GraphGenerator::generateConnectedGraph(int n, double density
         swap(nodes[i], nodes[j]);
     }
 
-    // Build spanning tree to guarantee connectivity
     for (int i = 1; i < n; ++i) {
         int u = nodes[i];
         int target_index = rand() % i;
@@ -35,7 +33,6 @@ vector<vector<int>> GraphGenerator::generateConnectedGraph(int n, double density
         }
     }
 
-    // Add additional random edges based on density
     for (int i = 0; i < n; ++i) {
         for (int j = i + 1; j < n; ++j) {
             bool edgeExists = (adj[i][j] == 1 || adj[j][i] == 1);
@@ -65,7 +62,6 @@ void GraphGenerator::saveGraphsToFile(const string& filename,
         return;
     }
 
-    // Write first graph G (pattern)
     file << G.size() << endl;
     for (const auto& row : G) {
         for (size_t j = 0; j < row.size(); ++j) {
@@ -74,7 +70,6 @@ void GraphGenerator::saveGraphsToFile(const string& filename,
         file << endl;
     }
 
-    // Write second graph H (target)
     file << H.size() << endl;
     for (const auto& row : H) {
         for (size_t j = 0; j < row.size(); ++j) {

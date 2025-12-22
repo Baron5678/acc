@@ -1,4 +1,4 @@
-#include "../include/HungarianAlgorithm.h"
+#include "HungarianAlgorithm.h"
 #include <climits>
 #include <vector>
 

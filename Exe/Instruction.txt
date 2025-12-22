@@ -1,0 +1,11 @@
+For compile:
+1. for Compiling main_generator
+g++ main_generator.cpp GraphGenerator.cpp -std=c++17 -O2 -o MainGenerator.exe
+2. for compiling Resolver.exe
+g++ main_solver.cpp HungarianAlgorithm.cpp Graph.cpp -std=c++17 -O2 -o MainResolver.exe
+
+
+For running program:
+in Exe folder:
+./MainResolver exact ../Examples/Graph1.txt
+./MainResolver hungarian 
