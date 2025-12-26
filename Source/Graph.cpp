@@ -5,7 +5,13 @@
 #include <chrono>
 #include <climits>
 #include <functional>
+#include <iostream>
+#include <iomanip>
 #include "HungarianAlgorithm.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 using namespace std;
 
@@ -83,9 +89,7 @@ void Graph::resize(int new_size) {
     }
 }
 
-void Graph::printWithHighlight(const vector<int>& mapping) const {
-    const string GREEN = "\033[1;32m";
-    const string RESET = "\033[0m";
+void Graph::print() const {
 
     for (int i = 0; i < size; ++i) {
         for (int j = 0; j < size; ++j) {
@@ -94,6 +98,92 @@ void Graph::printWithHighlight(const vector<int>& mapping) const {
         cout << endl;
     }
 }
+
+int Graph::edgeCount() const {
+    int cnt = 0;
+    for (int i = 0; i < size; ++i)
+        for (int j = 0; j < size; ++j)
+            if (adj[i][j] != 0) cnt++;
+    return cnt;
+}
+
+
+void Graph::printHighlighted(const Graph& other) const {
+    using std::cout;
+    using std::endl;
+
+    const int nExt = this->size;
+    const int nOrg = other.size;
+
+    const int n = (nExt > nOrg) ? nExt : nOrg;
+
+    const int W = 2;        
+    const int GAP = 6;       
+    const int LABELW = 6;    
+
+#ifdef _WIN32
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    WORD savedAttr = 0;
+    if (hConsole != INVALID_HANDLE_VALUE && GetConsoleScreenBufferInfo(hConsole, &csbi)) {
+        savedAttr = csbi.wAttributes;
+    }
+    else {
+        hConsole = INVALID_HANDLE_VALUE;
+    }
+
+    const WORD GREEN = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+
+    auto setColor = [&](WORD attr) {
+        if (hConsole != INVALID_HANDLE_VALUE) SetConsoleTextAttribute(hConsole, attr);
+        };
+#else
+    const char* GREEN = "\033[1;32m";
+    const char* RESET = "\033[0m";
+#endif
+
+    auto getCell = [&](const Graph& g, int i, int j) -> int {
+        if (i < 0 || j < 0) return 0;
+        if (i >= g.size || j >= g.size) return 0;
+        return g.adj[i][j];
+        };
+
+    for (int i = 0; i < n; ++i) {
+        for (int j = 0; j < n; ++j) {
+            cout << std::setw(W) << getCell(other, i, j);
+        }
+
+        cout << std::string(GAP, ' ');
+
+
+        for (int j = 0; j < n; ++j) {
+            const int org = getCell(other, i, j);
+            const int ext = getCell(*this, i, j);
+
+            const bool isNewEdge = (ext != 0 && org == 0);
+
+#ifdef _WIN32
+            if (isNewEdge) setColor(GREEN);
+            cout << std::setw(W) << ext;
+            if (isNewEdge) setColor(savedAttr);
+#else
+            if (isNewEdge) cout << GREEN;
+            cout << std::setw(W) << ext;
+            if (isNewEdge) cout << RESET;
+#endif
+        }
+
+        cout << "\n";
+}
+
+#ifdef _WIN32
+    if (hConsole != INVALID_HANDLE_VALUE) {
+        SetConsoleTextAttribute(hConsole, savedAttr);
+    }
+#endif
+}
+
 
 int Graph::computeDistance(const Graph& other, const vector<int>& mapping) const {
     int cost = 0;
@@ -201,11 +291,6 @@ void Graph::exactMinExtendGraph(const Graph& target, int targetCopies) {
 
         cout << "Execution time: " << elapsed_ms << " ms" << endl;
 
-        cout << endl << "--- Graph G ---" << endl;
-        this->printWithHighlight(vector<int>());
-
-        cout << endl << "--- Graph H ---" << endl;
-        H_ext.printWithHighlight(vector<int>());
     } else {
         Graph H_ext = target;
         vector<bool> usedH(target.size, false);
@@ -274,11 +359,6 @@ void Graph::exactMinExtendGraph(const Graph& target, int targetCopies) {
         cout << "Total edges added: " << totalEdgesAdded << endl;
         cout << "Execution time: " << elapsed_ms << " ms" << endl;
 
-        cout << endl << "--- Graph G ---" << endl;
-        this->printWithHighlight(vector<int>());
-
-        cout << endl << "--- Extended Graph H ---" << endl;
-        H_ext.printWithHighlight(vector<int>());
     }
 }
 
