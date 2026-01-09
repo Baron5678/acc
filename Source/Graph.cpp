@@ -185,16 +185,16 @@ void Graph::printHighlighted(const Graph& other) const {
 }
 
 
-int ComputeDistance(const Graph& G, const Graph& H, const vector<int>& mapping) {
+int Graph::ComputeDistance(const Graph& other, const vector<int>& mapping) const {
     int cost = 0;
-    int n = G.size;
+    int n = this->size;
 
     for (int uG = 0; uG < n; ++uG) {
         for (int vG = 0; vG < n; ++vG) {
-            if (G.adj[uG][vG] > 0) {
+            if (this->adj[uG][vG] > 0) {
                 int uH = mapping[uG];
                 int vH = mapping[vG];
-                if (H.adj[uH][vH] == 0) {
+                if (other.adj[uH][vH] == 0) {
                     cost++;
                 }
             }
@@ -203,39 +203,20 @@ int ComputeDistance(const Graph& G, const Graph& H, const vector<int>& mapping) 
     return cost;
 }
 
-int ExtendGraph(const Graph& G, Graph& H_ext, const std::vector<int>& mapping) {
-    const int n = G.size;
-    int added = 0;
-
-    for (int uG = 0; uG < n; ++uG) {
-        int uH = mapping[uG];
-        for (int vG = 0; vG < n; ++vG) {
-            if (G.adj[uG][vG] > 0) {
-                int vH = mapping[vG];
-                if (H_ext.adj[uH][vH] == 0) {
-                    H_ext.adj[uH][vH] = 1;
-                    added++;
-                }
-            }
-        }
-    }
-    return added;
-}
-
-pair<vector<int>, int> FindBestMapping(const Graph& G, const Graph& H) {
-    vector<int> mapping(G.size, -1);
-    vector<bool> usedH(H.size, false);
+pair<vector<int>, int> Graph::FindBestMapping(const Graph& target) const {
+    vector<int> mapping(size, -1);
+    vector<bool> usedH(target.size, false);
     
     function<pair<vector<int>, int>(int)> solve = [&](int vG) -> pair<vector<int>, int> {
-        if (vG == G.size) {
-            int distance = ComputeDistance(G, H, mapping);
+        if (vG == this->size) {
+            int distance = this->ComputeDistance(target, mapping);
             return {mapping, distance};
         }
 
         int bestDistance = INT_MAX;
         vector<int> bestMapping;
 
-        for (int vH = 0; vH < H.size; ++vH) {
+        for (int vH = 0; vH < target.size; ++vH) {
             if (!usedH[vH]) {
                 mapping[vG] = vH;
                 usedH[vH] = true;
