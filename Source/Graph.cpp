@@ -185,7 +185,7 @@ void Graph::printHighlighted(const Graph& other) const {
 }
 
 
-int Graph::computeDistance(const Graph& other, const vector<int>& mapping) const {
+int Graph::ComputeDistance(const Graph& other, const vector<int>& mapping) const {
     int cost = 0;
     int n = this->size;
 
@@ -203,13 +203,13 @@ int Graph::computeDistance(const Graph& other, const vector<int>& mapping) const
     return cost;
 }
 
-pair<vector<int>, int> Graph::findBestMapping(const Graph& target) const {
+pair<vector<int>, int> Graph::FindBestMapping(const Graph& target) const {
     vector<int> mapping(size, -1);
     vector<bool> usedH(target.size, false);
     
     function<pair<vector<int>, int>(int)> solve = [&](int vG) -> pair<vector<int>, int> {
         if (vG == this->size) {
-            int distance = this->computeDistance(target, mapping);
+            int distance = this->ComputeDistance(target, mapping);
             return {mapping, distance};
         }
 
@@ -238,129 +238,7 @@ pair<vector<int>, int> Graph::findBestMapping(const Graph& target) const {
     return solve(0);
 }
 
-Graph Graph::extendGraph(int target_size) const {
-    Graph extended(target_size);
-    for (int i = 0; i < min(size, target_size); ++i) {
-        for (int j = 0; j < min(size, target_size); ++j) {
-            extended.adj[i][j] = adj[i][j];
-        }
-    }
 
-    return extended;
-}
-
-void Graph::exactMinExtendGraph(const Graph& target, int targetCopies) {
-    Graph originalH = target;
-
-    auto start = chrono::high_resolution_clock::now();
-
-    if (targetCopies == 1) {
-        auto result = findBestMapping(target);
-        vector<int> bestMapping = result.first;
-        int bestDistance = result.second;
-
-        Graph H_ext = target;
-        if (bestDistance != 0 && bestDistance != INT_MAX) {
-            for (int uG = 0; uG < this->size; ++uG) {
-                for (int vG = 0; vG < this->size; ++vG) {
-                    if (this->adj[uG][vG] > 0) {
-                        int uH = bestMapping[uG];
-                        int vH = bestMapping[vG];
-                        if (H_ext.adj[uH][vH] == 0) {
-                            H_ext.adj[uH][vH] = 1;
-                        }
-                    }
-                }
-            }
-        }
-
-        bool isSubgraph = (bestDistance == 0);
-
-        auto end = chrono::high_resolution_clock::now();
-        auto elapsed_ms = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-
-        cout << "Is Subgraph? " << (isSubgraph ? "YES" : "NO") << endl;
-        cout << "Minimal Extension Cost: " << bestDistance << endl;
-
-        if (bestDistance != INT_MAX) {
-            cout << "One of the best mappings (G->H): ";
-            for (size_t i = 0; i < bestMapping.size(); i++)
-                cout << i << "->" << bestMapping[i] << " ";
-            cout << endl;
-        }
-
-        cout << "Execution time: " << elapsed_ms << " ms" << endl;
-
-    } else {
-        Graph H_ext = target;
-        vector<bool> usedH(target.size, false);
-        int totalEdgesAdded = 0;
-        int copiesFound = 0;
-        
-        for (int copyNum = 0; copyNum < targetCopies; ++copyNum) {
-            int availableNodes = 0;
-            for (bool used : usedH) {
-                if (!used) availableNodes++;
-            }
-            
-            if (availableNodes < this->size) {
-                break;
-            }
-            
-            vector<int> availableH;
-            for (int i = 0; i < target.size; ++i) {
-                if (!usedH[i]) {
-                    availableH.push_back(i);
-                }
-            }
-            
-            Graph availableGraph(availableH.size());
-            for (size_t i = 0; i < availableH.size(); ++i) {
-                for (size_t j = 0; j < availableH.size(); ++j) {
-                    availableGraph.adj[i][j] = H_ext.adj[availableH[i]][availableH[j]];
-                }
-            }
-            
-            auto result = findBestMapping(availableGraph);
-            if (result.second == INT_MAX) {
-                break;
-            }
-            
-            vector<int> actualMapping(this->size);
-            for (int i = 0; i < this->size; ++i) {
-                actualMapping[i] = availableH[result.first[i]];
-                usedH[actualMapping[i]] = true;
-            }
-            
-            int edgesAdded = 0;
-            for (int uG = 0; uG < this->size; ++uG) {
-                for (int vG = 0; vG < this->size; ++vG) {
-                    if (this->adj[uG][vG] > 0) {
-                        int uH = actualMapping[uG];
-                        int vH = actualMapping[vG];
-                        if (H_ext.adj[uH][vH] == 0) {
-                            H_ext.adj[uH][vH] = 1;
-                            edgesAdded++;
-                        }
-                    }
-                }
-            }
-            
-            totalEdgesAdded += edgesAdded;
-            copiesFound++;
-        }
-
-        auto end = chrono::high_resolution_clock::now();
-        auto elapsed_ms = chrono::duration_cast<chrono::milliseconds>(end - start).count();
-
-        cout << "\n=== EXACT ALGORITHM RESULTS (MULTIPLE COPIES) ===" << endl;
-        cout << "Target copies requested: " << targetCopies << endl;
-        cout << "Copies found: " << copiesFound << endl;
-        cout << "Total edges added: " << totalEdgesAdded << endl;
-        cout << "Execution time: " << elapsed_ms << " ms" << endl;
-
-    }
-}
 
 vector<int> computeDegrees(const vector<vector<int>>& adj) {
     int n = adj.size();

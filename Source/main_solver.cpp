@@ -42,6 +42,11 @@ struct SolveResult {
     bool isSubgraph = false;
 };
 
+struct Candidate {
+    int dist;
+    vector<int> mapping;
+};
+
 vector<int> computeDegrees(const vector<vector<int>>& adj);
 
 int evaluateMapping(const Graph& G, const Graph& H, const vector<int>& mapping) { // Returns number of edges needed to add to H 
@@ -301,7 +306,27 @@ SolveResult runHungarian(const Graph& G, const Graph& H, int targetCopies = -1) 
     return res;
 }
 
-SolveResult runExact(const Graph& G, const Graph& H, int targetCopies) {
+static int ExtendGraph(const Graph& G, Graph& H_ext, const std::vector<int>& mapping) {
+    const int n = G.size;
+    int added = 0;
+
+    for (int uG = 0; uG < n; ++uG) {
+        int uH = mapping[uG];
+        for (int vG = 0; vG < n; ++vG) {
+            if (G.adj[uG][vG] > 0) {
+                int vH = mapping[vG];
+                if (H_ext.adj[uH][vH] == 0) {
+                    H_ext.adj[uH][vH] = 1;
+                    added++;
+                }
+            }
+        }
+    }
+    return added;
+}
+
+
+SolveResult ExactMinExtendGraph(const Graph& G, const Graph& H, int targetCopies) {
     using namespace std;
     using namespace std::chrono;
 
@@ -312,23 +337,13 @@ SolveResult runExact(const Graph& G, const Graph& H, int targetCopies) {
     auto start = high_resolution_clock::now();
     Graph H_ext = H;
     if (targetCopies == 1) {
-        auto result = G.findBestMapping(H);
+        auto result = G.FindBestMapping(H);
         res.bestMapping = result.first;
         res.bestDistance = result.second;
 
         
         if (res.bestDistance != 0 && res.bestDistance != INT_MAX) {
-            for (int uG = 0; uG < G.size; ++uG) {
-                for (int vG = 0; vG < G.size; ++vG) {
-                    if (G.adj[uG][vG] > 0) {
-                        int uH = res.bestMapping[uG];
-                        int vH = res.bestMapping[vG];
-                        if (H_ext.adj[uH][vH] == 0) {
-                            H_ext.adj[uH][vH] = 1;
-                        }
-                    }
-                }
-            }
+            ExtendGraph(G, H_ext, res.bestMapping);
         }
 
         res.isSubgraph = (res.bestDistance == 0);
@@ -398,10 +413,6 @@ SolveResult runExact(const Graph& G, const Graph& H, int targetCopies) {
 
         dfs(0);
 
-        struct Candidate {
-            int dist;
-            vector<int> mapping;
-        };
         vector<Candidate> cand;
         cand.reserve(bestForSet.size());
         for (auto& kv : bestForSet) {
@@ -545,10 +556,10 @@ int main(int argc, char* argv[]) {
 
     if (algorithm == "exact") {
         if (targetCopies <= 0) {
-            res = runExact(G, H, 1);
+            res = ExactMinExtendGraph(G, H, 1);
         }
         else {
-            res = runExact(G, H, targetCopies);
+            res = ExactMinExtendGraph(G, H, targetCopies);
         }
     }
     else if (algorithm == "hungarian") {
