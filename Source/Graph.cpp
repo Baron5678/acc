@@ -203,6 +203,37 @@ int Graph::ComputeDistance(const Graph& other, const vector<int>& mapping) const
     return cost;
 }
 
+int Graph::DistanceMetric(const Graph& other, const vector<int>& mapping) const {
+    int cost = 0;
+    int n = this->size;
+
+    for (int uG = 0; uG < n; ++uG) {
+        for (int vG = 0; vG < n; ++vG) {
+            if (this->adj[uG][vG] > 0) {
+                int uH = mapping[uG];
+                int vH = mapping[vG];
+                if ((this->adj[uG][vG] > 0) != (other.adj[uH][vH] > 0)) {
+                    cost++; // Counts if A has it and B doesn't, OR if B has it and A doesn't
+                }
+            }
+        }
+    }
+
+    // Vertex Difference
+    for (int u = 0; u < n; ++u) {
+        int v = mapping[u]; // corresponding vertex in other graph
+        
+        if (v < 0) {
+            cost++; // count vertex Deletion
+            continue;
+        }
+    }
+    if(other.size > n){ // Assuming every vertex is mapped inside "other" graph if possible
+        cost += other.size - n; // count vertex addition
+    }
+    return cost;
+}
+
 pair<vector<int>, int> Graph::FindBestMapping(const Graph& target) const {
     vector<int> mapping(size, -1);
     vector<bool> usedH(target.size, false);

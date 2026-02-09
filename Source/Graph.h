@@ -17,6 +17,7 @@ public:
     void print() const;
     void printHighlighted(const Graph& other) const;
     int ComputeDistance(const Graph& other, const std::vector<int>& mapping) const;
+    int DistanceMetric(const Graph& other, const std::vector<int>& mapping) const;
     std::pair<std::vector<int>, int> FindBestMapping(const Graph& target) const;
     int edgeCount() const;
     static std::pair<bool, std::vector<int>> hungarianMappingOne(const Graph& G, const Graph& H);
