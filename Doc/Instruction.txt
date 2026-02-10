@@ -1,9 +1,16 @@
-Compilation (Linux/MacOS or Windows with MinGW):
+Compilation (Linux/MacOS or Windows PowerShell with MinGW):
 
 1. Compiling Graph Generator
 g++ ./Source/main_generator.cpp ./Source/GraphGenerator.cpp -std=c++17 -O2 -static -static-libgcc -static-libstdc++ -o ./Exe/MainGenerator.exe
 2. Compiling Graph Minimum Extension Program
 g++ ./Source/main_solver.cpp ./Source/HungarianAlgorithm.cpp ./Source/Graph.cpp -std=c++17 -O2 -static -static-libgcc -static-libstdc++ -o ./Exe/MainResolver.exe
+
+In Windows CMD, you must replace slashes with backslashes:
+
+1. Compiling Graph Generator
+g++ .\Source\main_generator.cpp .\Source\GraphGenerator.cpp -std=c++17 -O2 -static -static-libgcc -static-libstdc++ -o .\Exe\MainGenerator.exe
+2. Compiling Graph Minimum Extension Program
+g++ .\Source\main_solver.cpp .\Source\HungarianAlgorithm.cpp .\Source\Graph.cpp -std=c++17 -O2 -static -static-libgcc -static-libstdc++ -o .\Exe\MainResolver.exe
 
 On Linux or MacOS, if you have problems compiling, omit the "-static -static-libgcc -static-libstdc++" flags.
 
@@ -28,23 +35,42 @@ Four example files in the format are provided in ./Example/Graph{i}.txt, i >= 1,
 
 The general form for running the minimum extension of a subgraph of H for isomorphism with G and visualizing the results is as follows:
 
-./Exe/MainResolver.exe (hungarian|exact) ./path/to/graphs/file.txt (integer: no. isomorphisms)
+./Exe/MainResolver.exe <hungarian|exact> ./path/to/graphs/file.txt <integer: no. isomorphisms>
+
+or in Windows CMD (backslashes instead of slashes):
+
+.\Exe\MainResolver.exe <hungarian|exact> .\path\to\graphs\file.txt <integer: no. isomorphisms>
 
 Where "exact" checks all possible mappings and picks the best one, and "hungarian" computes an optimized mapping by solving an assignment problem to minimize cost (Kuhn-Munkres algorithm), which approximates the best mapping.
 
 To compute the exact minimum extension of a sugraph of H for isomorphism with G and visualize the change:
 ./Exe/MainResolver.exe exact ./Examples/Graph1.txt 1
 
+or in Windows CMD (backslashes instead of slashes):
+.\Exe\MainResolver.exe exact .\Examples\Graph1.txt 1
+
 To compute the approximation of the minimum extension of a subgraph H for isomorphism with G using the hungarian algorithm and visualize the change of the adjacency matrix:
 ./Exe/MainResolver.exe hungarian ./Examples/Graph1.txt 1
+
+or in Windows CMD (backslashes instead of slashes):
+.\Exe\MainResolver.exe hungarian .\Examples\Graph1.txt 1
 
 To try to find n minimum extension isomorphisms with the approximation and visualize the change of the adjacency matrix:
 ./Exe/MainResolver.exe hungarian ./Examples/Graph1.txt n
 
+or in Windows CMD (backslashes instead of slashes):
+.\Exe\MainResolver.exe hungarian .\Examples\Graph1.txt n
+
 To try to find a maximum amount of minimum extension isomorphisms with the approximation:
 ./Exe/MainResolver.exe hungarian ./Examples/Graph1.txt -1
 
+or in Windows CMD (backslashes instead of slashes):
+.\Exe\MainResolver.exe hungarian .\Examples\Graph1.txt -1
+
 To generate random graphs G (pattern) and H (target) and save them to a file (`graphs.txt`) use:
 ./Exe/MainGenerator.exe {size V(G)} {size V(H)}
+
+or in Windows CMD (backslashes instead of slashes):
+.\Exe\MainGenerator.exe {size V(G)} {size V(H)}
 
 Both arguments are optional — if omitted the defaults are `V(G)=5` and `V(H)=8`. The program seeds the random number generator with the current time, so output differs between runs. Densities used by the generator are set in the program (default: density_G = 0.8 for G and density_H = 0.3 for H). The generated graphs are written as adjacency matrices to `graphs.txt` (first the size and matrix for G, then the size and matrix for H). If you specify a target H smaller than pattern G the program will print a warning.
