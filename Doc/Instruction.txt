@@ -5,6 +5,8 @@ g++ ./Source/main_generator.cpp ./Source/GraphGenerator.cpp -std=c++17 -O2 -stat
 2. Compiling Graph Minimum Extension Program
 g++ ./Source/main_solver.cpp ./Source/HungarianAlgorithm.cpp ./Source/Graph.cpp -std=c++17 -O2 -static -static-libgcc -static-libstdc++ -o ./Exe/MainResolver.exe
 
+On Linux or MacOS, if you have problems compiling, omit the "-static -static-libgcc -static-libstdc++" flags.
+
 For running the program:
 
 Use an input file in the following format:
