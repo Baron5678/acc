@@ -30,15 +30,18 @@ To compute the exact minimum extension of a sugraph of H for isomorphism with G 
 ./Exe/MainResolver.exe exact ./Examples/Graph1.txt
 
 To compute the approximation of the minimum extension of a subgraph H for isomorphism with G using the hungarian algorithm and visualize the change of the adjacency matrix:
-./Exe/MainResolver.exe hungarian ./Examples/Graph1 1
+./Exe/MainResolver.exe hungarian ./Examples/Graph1.exe 1
 
 To try to find n minimum extension isomorphisms with the approximation and visualize the change of the adjacency matrix:
-./Exe/MainResolver.exe hungarian ./Examples/Graph1 n
+./Exe/MainResolver.exe hungarian ./Examples/Graph1.exe n
 
 To try to find a maximum amount of minimum extension isomorphisms with the approximation:
-./Exe/MainResolver.exe hungarian ./Examples/Graph1 -1
+./Exe/MainResolver.exe hungarian ./Examples/Graph1.exe -1
 
 To generate random graphs G (pattern) and H (target) and save them to a file (`graphs.txt`) use:
 ./Exe/MainGenerator.exe {size V(G)} {size V(H)}
 
 Both arguments are optional — if omitted the defaults are `V(G)=5` and `V(H)=8`. The program seeds the random number generator with the current time, so output differs between runs. Densities used by the generator are set in the program (default: density_G = 0.8 for G and density_H = 0.3 for H). The generated graphs are written as adjacency matrices to `graphs.txt` (first the size and matrix for G, then the size and matrix for H). If you specify a target H smaller than pattern G the program will print a warning.
+
+You can then run the algorithm(s) on the generated file by running the command:
+./Exe/MainResolver.exe (hungarian|exact) ./path/to/graphs.txt
