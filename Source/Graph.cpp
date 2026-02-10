@@ -117,9 +117,9 @@ void Graph::printHighlighted(const Graph& other) const {
 
     const int n = (nExt > nOrg) ? nExt : nOrg;
 
-    const int W = 2;        
-    const int GAP = 6;       
-    const int LABELW = 6;    
+    const int W = 2;
+    const int GAP = 6;
+    const int LABELW = 6;
 
 #ifdef _WIN32
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -186,21 +186,7 @@ void Graph::printHighlighted(const Graph& other) const {
 
 
 int Graph::ComputeDistance(const Graph& other, const vector<int>& mapping) const {
-    int cost = 0;
-    int n = this->size;
-
-    for (int uG = 0; uG < n; ++uG) {
-        for (int vG = 0; vG < n; ++vG) {
-            if (this->adj[uG][vG] > 0) {
-                int uH = mapping[uG];
-                int vH = mapping[vG];
-                if (other.adj[uH][vH] == 0) {
-                    cost++;
-                }
-            }
-        }
-    }
-    return cost;
+    return Graph::DistanceMetric(other, mapping);
 }
 
 int Graph::DistanceMetric(const Graph& other, const vector<int>& mapping) const {
@@ -222,7 +208,7 @@ int Graph::DistanceMetric(const Graph& other, const vector<int>& mapping) const 
     // Vertex Difference
     for (int u = 0; u < n; ++u) {
         int v = mapping[u]; // corresponding vertex in other graph
-        
+
         if (v < 0) {
             cost++; // count vertex Deletion
             continue;
@@ -237,7 +223,7 @@ int Graph::DistanceMetric(const Graph& other, const vector<int>& mapping) const 
 pair<vector<int>, int> Graph::FindBestMapping(const Graph& target) const {
     vector<int> mapping(size, -1);
     vector<bool> usedH(target.size, false);
-    
+
     function<pair<vector<int>, int>(int)> solve = [&](int vG) -> pair<vector<int>, int> {
         if (vG == this->size) {
             int distance = this->ComputeDistance(target, mapping);
@@ -265,7 +251,7 @@ pair<vector<int>, int> Graph::FindBestMapping(const Graph& target) const {
 
         return {bestMapping, bestDistance};
     };
-    
+
     return solve(0);
 }
 
@@ -331,7 +317,7 @@ pair<bool, vector<int>> Graph::hungarianMappingOne(const Graph& G, const Graph& 
                 }
                 else {
                     int cost = 0;
-                    
+
                     for (int k = 0; k < n; ++k) {
                         if (i != k) {
                             if (G.adj[i][k] == 1) {
@@ -350,10 +336,10 @@ pair<bool, vector<int>> Graph::hungarianMappingOne(const Graph& G, const Graph& 
                             }
                         }
                     }
-                    
+
                     cost += abs(degG[i] - degH[j]);
                     cost += (i + j) / 10;
-                    
+
                     hungarian.setCost(i, j, cost + 1);
                 }
             }

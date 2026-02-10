@@ -1,11 +1,42 @@
-For compile:
-1. for Compiling main_generator
-g++ main_generator.cpp GraphGenerator.cpp -std=c++17 -O2 -o MainGenerator.exe
-2. for compiling Resolver.exe
-g++ main_solver.cpp HungarianAlgorithm.cpp Graph.cpp -std=c++17 -O2 -o MainResolver.exe
+Compilation (Linux/MacOS or Windows with MinGW):
 
+1. Compiling Graph Generator
+g++ ./Source/main_generator.cpp ./Source/GraphGenerator.cpp -std=c++17 -O2 -static -static-libgcc -static-libstdc++ -o ./Exe/MainGenerator.exe
+2. Compiling Graph Minimum Extension Program
+g++ ./Source/main_solver.cpp ./Source/HungarianAlgorithm.cpp ./Source/Graph.cpp -std=c++17 -O2 -static -static-libgcc -static-libstdc++ -o ./Exe/MainResolver.exe
 
-For running program:
-in Exe folder:
-./MainResolver exact ../Examples/Graph1.txt
-./MainResolver hungarian 
+For running the program:
+
+Use an input file in the following format:
+
+n
+x_1,1 x_1,2 ... x_1,n
+x_2,1 x_2,2 ... x_2,n
+...    ...  ...  ...
+x_n,1 x_n,2 ... x_n,n
+m
+y_1,1 y_1,2 ... y_1,m
+y_2,1 y_2,2 ... y_2,m
+...    ...  ...  ...
+y_m,1 y_m,2 ... y_m,m
+
+Where n,m are the sizes of the adjacency matrices of graphs H and G respectively, and x_i,j, y_i,j are either 1 or 0 (edge or no edge) values of the respective adjacency matrices, and n >= m.
+
+Four example files in the format are provided in ./Example/Graph{i}.txt, i >= 1, i <= 4.
+
+To compute the exact minimum extension of a sugraph of H for isomorphism with G and visualize the change:
+./Exe/MainResolver.exe exact ./Examples/Graph1.txt
+
+To compute the approximation of the minimum extension of a subgraph H for isomorphism with G using the hungarian algorithm and visualize the change of the adjacency matrix:
+./Exe/MainResolver.exe hungarian ./Examples/Graph1 1
+
+To try to find n minimum extension isomorphisms with the approximation and visualize the change of the adjacency matrix:
+./Exe/MainResolver.exe hungarian ./Examples/Graph1 n
+
+To try to find a maximum amount of minimum extension isomorphisms with the approximation:
+./Exe/MainResolver.exe hungarian ./Examples/Graph1 -1
+
+To generate random graphs G (pattern) and H (target) and save them to a file (`graphs.txt`) use:
+./Exe/MainGenerator.exe {size V(G)} {size V(H)}
+
+Both arguments are optional — if omitted the defaults are `V(G)=5` and `V(H)=8`. The program seeds the random number generator with the current time, so output differs between runs. Densities used by the generator are set in the program (default: density_G = 0.8 for G and density_H = 0.3 for H). The generated graphs are written as adjacency matrices to `graphs.txt` (first the size and matrix for G, then the size and matrix for H). If you specify a target H smaller than pattern G the program will print a warning.
