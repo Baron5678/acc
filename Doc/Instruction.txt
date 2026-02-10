@@ -30,13 +30,13 @@ To compute the exact minimum extension of a sugraph of H for isomorphism with G 
 ./Exe/MainResolver.exe exact ./Examples/Graph1.txt
 
 To compute the approximation of the minimum extension of a subgraph H for isomorphism with G using the hungarian algorithm and visualize the change of the adjacency matrix:
-./Exe/MainResolver.exe hungarian ./Examples/Graph1.exe 1
+./Exe/MainResolver.exe hungarian ./Examples/Graph1.txt 1
 
 To try to find n minimum extension isomorphisms with the approximation and visualize the change of the adjacency matrix:
-./Exe/MainResolver.exe hungarian ./Examples/Graph1.exe n
+./Exe/MainResolver.exe hungarian ./Examples/Graph1.txt n
 
 To try to find a maximum amount of minimum extension isomorphisms with the approximation:
-./Exe/MainResolver.exe hungarian ./Examples/Graph1.exe -1
+./Exe/MainResolver.exe hungarian ./Examples/Graph1.txt -1
 
 To generate random graphs G (pattern) and H (target) and save them to a file (`graphs.txt`) use:
 ./Exe/MainGenerator.exe {size V(G)} {size V(H)}
